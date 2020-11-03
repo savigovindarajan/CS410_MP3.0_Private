@@ -138,12 +138,14 @@ class Corpus(object):
      #   row_sums = np.zeros([1, 1, self.vocabulary_size], dtype=np.float)
         print("E step:")
         for topic in range(0, 2):
-            row_sums = np.zeros([1, 1, self.vocabulary_size], dtype=np.float)
+
             for doc in range(0,self.number_of_documents):
+                 row_sums = np.zeros([1, 1, self.vocabulary_size], dtype=np.float)
                  for word in range(0,self.vocabulary_size):
                     self.topic_prob[doc][topic][word] = self.document_topic_prob[doc][topic] * self.topic_word_prob[topic][word]
                  row_sums = row_sums + self.topic_prob[doc][topic][word]
             self.topic_prob[topic] = self.topic_prob[topic]/row_sums
+        print(self.topic_prob)
       #  pass    # REMOVE THIS
             
 
@@ -223,7 +225,7 @@ class Corpus(object):
             self.calculate_likelihood(number_of_topics)
             if (iteration >1 and (self.likelihoods[iteration] - self.likelihoods[iteration-1]) < epsilon ):
                 exit()
-        print(self.likelihoods)
+        #print(self.likelihoods)
 
 
             #pass    # REMOVE THIS
