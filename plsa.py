@@ -189,7 +189,7 @@ class Corpus(object):
             for word in range(0,self.vocabulary_size):
                 topicsum = 0
                 for topic in range(0,number_of_topics):
-                    topicsum = topicsum + math.log2(self.document_topic_prob[doc][topic]*self.topic_word_prob[topic][word])
+                    topicsum = topicsum + math.log(self.document_topic_prob[doc][topic]*self.topic_word_prob[topic][word])
                 wordsum = topicsum + self.term_doc_matrix[doc][word]
         self.likelihoods.append(wordsum)
         print(self.likelihoods)
