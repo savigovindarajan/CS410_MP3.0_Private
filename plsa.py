@@ -145,7 +145,7 @@ class Corpus(object):
                     self.topic_prob[doc][topic][word] = self.document_topic_prob[doc][topic] * self.topic_word_prob[topic][word]
                  row_sums = row_sums + self.topic_prob[doc][topic][word]
             self.topic_prob[topic] = self.topic_prob[topic]/row_sums
-        print(self.topic_prob)
+      #  print(self.topic_prob)
       #  pass    # REMOVE THIS
             
 
@@ -194,7 +194,7 @@ class Corpus(object):
                     topicsum = topicsum + math.log(self.document_topic_prob[doc][topic]*self.topic_word_prob[topic][word])
                 wordsum = topicsum + self.term_doc_matrix[doc][word]
         self.likelihoods.append(wordsum)
-        print(self.likelihoods)
+      #  print(self.likelihoods)
         return
 
     def plsa(self, number_of_topics, max_iter, epsilon):
