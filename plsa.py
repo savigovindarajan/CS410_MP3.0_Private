@@ -90,7 +90,7 @@ class Corpus(object):
                      if (term == self.documents[i][j]):
                          doc_term = doc_term +1
                 self.term_doc_matrix[i][n] = doc_term
-      #  print(self.term_doc_matrix)
+        print(self.term_doc_matrix)
     def initialize_randomly(self, number_of_topics):
         """
         Randomly initialize the matrices: document_topic_prob and topic_word_prob
@@ -141,24 +141,30 @@ class Corpus(object):
         """
         new_matrix = np.zeros([self.number_of_documents, number_of_topics, self.vocabulary_size], dtype=np.float)
         print("E step:")
-        for topic in range(0, number_of_topics):
-            for doc in range(0, self.number_of_documents):
-                for word in range(0, self.vocabulary_size):
-                    self.topic_prob[doc][topic][word] = self.document_topic_prob[doc][topic] * self.topic_word_prob[topic][word]
-       # print('self.topic_prob')
-       # print(self.topic_prob)
-        new_matrix = self.topic_prob.sum(axis=0)
-       # print('new_matrix')
-       # print(new_matrix)
+        # for topic in range(0, number_of_topics):
+        #     for doc in range(0, self.number_of_documents):
+        #         for word in range(0, self.vocabulary_size):
+        #             self.topic_prob[doc][topic][word] = self.document_topic_prob[doc][topic] * self.topic_word_prob[topic][word]
+        # print('self.topic_prob')
+        # print(self.topic_prob)
+        # new_matrix = self.topic_prob.sum(axis=2)
+        # print('new_matrix')
+        # print(new_matrix)
 
-        for topic in range(0, number_of_topics):
-            for doc in range(0, self.number_of_documents):
-                for word in range(0, self.vocabulary_size):
+        for doc in range(0, self.number_of_documents):
+            for word in range(0, self.vocabulary_size):
+                row_sums = 0
+                for topic in range(0, number_of_topics):
                     self.topic_prob[doc][topic][word] = (self.document_topic_prob[doc][topic] * self.topic_word_prob[topic][word])
-        self.topic_prob= self.topic_prob/new_matrix
+                    row_sums = row_sums + self.topic_prob[doc][topic][word]
+          #      print(self.topic_prob)
+                for topic in range(0, number_of_topics):
+                    self.topic_prob[doc][topic][word] = self.topic_prob[doc][topic][word]/row_sums
+           #     print(self.topic_prob)
+       # self.topic_prob= self.topic_prob/new_matrix
 
       #  print('topic prob')
-      #  print(self.topic_prob)
+        print(self.topic_prob)
 ##################################################################################
     def maximization_step(self, number_of_topics):
         """ The M-step updates P(w | z)
@@ -185,7 +191,7 @@ class Corpus(object):
                     self.document_topic_prob[doc][topic] = self.document_topic_prob[doc][topic]  +   (self.term_doc_matrix[doc][word]*self.topic_prob[doc][topic][word])
         self.document_topic_prob = normalize(self.document_topic_prob)
 
-     #   print(self.document_topic_prob)
+        print(self.document_topic_prob)
       #  pass    # REMOVE THIS
 
 
