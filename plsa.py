@@ -71,7 +71,7 @@ class Corpus(object):
         self.vocabulary = set(self.vocabulary)
         self.vocabulary = sorted(self.vocabulary)
         self.vocabulary_size = len(self.vocabulary)
-
+     #   print(self.vocabulary)
         #pass    # REMOVE THIS
 
     def build_term_doc_matrix(self):
@@ -90,7 +90,7 @@ class Corpus(object):
                      if (term == self.documents[i][j]):
                          doc_term = doc_term +1
                 self.term_doc_matrix[i][n] = doc_term
-       # print(self.term_doc_matrix)
+      #  print(self.term_doc_matrix)
     def initialize_randomly(self, number_of_topics):
         """
         Randomly initialize the matrices: document_topic_prob and topic_word_prob
@@ -106,7 +106,7 @@ class Corpus(object):
       #  print(self.document_topic_prob)
         self.topic_word_prob = np.random.random_sample((number_of_topics, len(self.vocabulary)))
         self.topic_word_prob = normalize(self.topic_word_prob)
-     #   print(self.topic_word_prob)
+       # print(self.topic_word_prob)
 
 
     #    pass    # REMOVE THIS
@@ -125,7 +125,7 @@ class Corpus(object):
         self.topic_word_prob = np.ones((number_of_topics, len(self.vocabulary)))
         self.topic_word_prob = normalize(self.topic_word_prob)
     #    print(self.topic_word_prob)
-    def initialize(self, number_of_topics, random=False):
+    def initialize(self, number_of_topics, random=True):
         """ Call the functions to initialize the matrices document_topic_prob and topic_word_prob
         """
         print("Initializing...")
@@ -163,16 +163,18 @@ class Corpus(object):
     def maximization_step(self, number_of_topics):
         """ The M-step updates P(w | z)
         """
-   #     print("M step:")
+        print("M step:")
 
         # update P(w | z)
         for topic in range(0, number_of_topics):
             for word in range(0, self.vocabulary_size):
-                self.topic_word_prob[topic][word] = 0
+                new_matrix = 0
                 for doc in range(0,self.number_of_documents):
-                    self.topic_word_prob[topic][word] = self.topic_word_prob[topic][word]+ (self.term_doc_matrix[doc][word]*self.topic_prob[doc][topic][word])
+                    new_matrix = new_matrix+ (self.term_doc_matrix[doc][word]*self.topic_prob[doc][topic][word])
+                self.topic_word_prob[topic][word] = new_matrix
+      #  print(self.topic_word_prob)
         self.topic_word_prob = normalize(self.topic_word_prob)
-      #  print('topic_word_prob',self.topic_word_prob )
+       # print('topic_word_prob',self.topic_word_prob )
 
 
         # update P(z | d)
@@ -233,8 +235,8 @@ class Corpus(object):
             self.expectation_step(number_of_topics)
             self.maximization_step(number_of_topics)
             self.calculate_likelihood(number_of_topics)
-            if (iteration >1 and (self.likelihoods[iteration] - self.likelihoods[iteration-1]) < epsilon ):
-                break
+          #  if (iteration >1 and (self.likelihoods[iteration] - self.likelihoods[iteration-1]) < epsilon ):
+           #     break
        # print(self.likelihoods)
 
 
@@ -251,7 +253,7 @@ def main():
     print("Vocabulary size:" + str(len(corpus.vocabulary)))
     print("Number of documents:" + str(len(corpus.documents)))
     number_of_topics = 2
-    max_iterations = 50
+    max_iterations = 5
     epsilon = 0.001
     corpus.plsa(number_of_topics, max_iterations, epsilon)
 
