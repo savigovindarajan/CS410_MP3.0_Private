@@ -170,7 +170,7 @@ class Corpus(object):
             for word in range(0, self.vocabulary_size):
                 self.topic_word_prob[topic][word] = 0
                 for doc in range(0,self.number_of_documents):
-                    self.topic_word_prob[topic][word]    = self.topic_word_prob[topic][word]+ (self.term_doc_matrix[doc][word]*self.topic_prob[doc][topic][word])
+                    self.topic_word_prob[topic][word] = self.topic_word_prob[topic][word]+ (self.term_doc_matrix[doc][word]*self.topic_prob[doc][topic][word])
         self.topic_word_prob = normalize(self.topic_word_prob)
       #  print('topic_word_prob',self.topic_word_prob )
 
@@ -200,8 +200,8 @@ class Corpus(object):
             for word in range(0,self.vocabulary_size):
                 topicsum = 0
                 for topic in range(0,number_of_topics):
-                    topicsum = topicsum + math.log(self.document_topic_prob[doc][topic]*self.topic_word_prob[topic][word])
-                wordsum = topicsum + self.term_doc_matrix[doc][word]
+                    topicsum = topicsum +  math.log(self.topic_word_prob[topic][word])
+                wordsum = topicsum * self.term_doc_matrix[doc][word]
             docsum = docsum +wordsum
         self.likelihoods.append(docsum)
         print(self.likelihoods)
