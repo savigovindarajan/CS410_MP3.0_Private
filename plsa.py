@@ -1,7 +1,6 @@
 import numpy as np
 import math
 
-
 def normalize(input_matrix):
     """
     Normalizes the rows of a 2d input_matrix so they sum to 1
@@ -71,7 +70,7 @@ class Corpus(object):
         self.vocabulary = set(self.vocabulary)
         self.vocabulary = sorted(self.vocabulary)
         self.vocabulary_size = len(self.vocabulary)
-     #   print(self.vocabulary)
+        print(self.vocabulary)
         #pass    # REMOVE THIS
 
     def build_term_doc_matrix(self):
@@ -186,9 +185,10 @@ class Corpus(object):
         # update P(z | d)
         for doc in range(0,self.number_of_documents):
              for topic in range(0,number_of_topics):
-                self.document_topic_prob[doc][topic] = 0
+                new_matrix = 0
                 for word in range(0, self.vocabulary_size):
-                    self.document_topic_prob[doc][topic] = self.document_topic_prob[doc][topic]  +   (self.term_doc_matrix[doc][word]*self.topic_prob[doc][topic][word])
+                    new_matrix = new_matrix + (self.term_doc_matrix[doc][word]*self.topic_prob[doc][topic][word])
+                self.document_topic_prob[doc][topic] = new_matrix
         self.document_topic_prob = normalize(self.document_topic_prob)
 
         print(self.document_topic_prob)
