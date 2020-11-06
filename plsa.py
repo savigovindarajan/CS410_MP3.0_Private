@@ -177,6 +177,7 @@ class Corpus(object):
                 new_matrix = 0
                 for doc in range(0,self.number_of_documents):
                     new_matrix = new_matrix+ (self.term_doc_matrix[doc][word]*self.topic_prob[doc][topic][word])
+                print(new_matrix)
                 self.topic_word_prob[topic][word] = new_matrix
       #  print(self.topic_word_prob)
         self.topic_word_prob = normalize(self.topic_word_prob)
@@ -208,7 +209,7 @@ class Corpus(object):
             for word in range(0,self.vocabulary_size):
                 topicsum = 0
                 for topic in range(0,number_of_topics):
-                    topicsum = topicsum +  math.log(self.topic_word_prob[topic][word])
+                    topicsum = topicsum +  math.log((self.document_topic_prob[doc][topic]*self.topic_word_prob[topic][word]))
                 wordsum = topicsum * self.term_doc_matrix[doc][word]
             docsum = docsum +wordsum
         self.likelihoods.append(docsum)
@@ -241,7 +242,7 @@ class Corpus(object):
             self.expectation_step(number_of_topics)
             self.maximization_step(number_of_topics)
             self.calculate_likelihood(number_of_topics)
-            if (iteration >1 and (self.likelihoods[iteration] - self.likelihoods[iteration-1]) < epsilon ):
+            if (iteration >1 and abs(self.likelihoods[iteration] - self.likelihoods[iteration-1]) < epsilon ):
                 break
        # print(self.likelihoods)
 
@@ -259,7 +260,7 @@ def main():
     print("Vocabulary size:" + str(len(corpus.vocabulary)))
     print("Number of documents:" + str(len(corpus.documents)))
     number_of_topics = 2
-    max_iterations = 5
+    max_iterations = 50
     epsilon = 0.001
     corpus.plsa(number_of_topics, max_iterations, epsilon)
 
