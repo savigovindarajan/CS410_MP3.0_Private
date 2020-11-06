@@ -181,7 +181,7 @@ class Corpus(object):
              for topic in range(0,number_of_topics):
                 new_matrix = 0
                 for word in range(0, self.vocabulary_size):
-                    new_matrix = (self.term_doc_matrix[doc][word]*self.topic_prob[doc][topic][word])
+                    new_matrix = new_matrix + (self.term_doc_matrix[doc][word]*self.topic_prob[doc][topic][word])
                 self.document_topic_prob[doc][topic] = new_matrix
         self.document_topic_prob = normalize(self.document_topic_prob)
 
