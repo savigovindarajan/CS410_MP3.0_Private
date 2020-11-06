@@ -164,10 +164,11 @@ class Corpus(object):
         """ The M-step updates P(w | z)
         """
    #     print("M step:")
-        self.topic_word_prob = np.zeros([number_of_topics,self.vocabulary_size], dtype=np.float)
+
         # update P(w | z)
         for topic in range(0, number_of_topics):
             for word in range(0, self.vocabulary_size):
+                self.topic_word_prob[topic][word] = 0
                 for doc in range(0,self.number_of_documents):
                     self.topic_word_prob[topic][word]    = self.topic_word_prob[topic][word]+ (self.term_doc_matrix[doc][word]*self.topic_prob[doc][topic][word])
         self.topic_word_prob = normalize(self.topic_word_prob)
@@ -175,16 +176,14 @@ class Corpus(object):
 
 
         # update P(z | d)
-      #  self.document_topic_prob = np.zeros([self.number_of_documents, number_of_topics], dtype=np.float)
         for doc in range(0,self.number_of_documents):
-             self.document_topic_prob[doc][topic] = 0
              for topic in range(0,number_of_topics):
+                self.document_topic_prob[doc][topic] = 0
                 for word in range(0, self.vocabulary_size):
                     self.document_topic_prob[doc][topic] = self.document_topic_prob[doc][topic]  +   (self.term_doc_matrix[doc][word]*self.topic_prob[doc][topic][word])
-      #  print('doc_topic_prob', self.document_topic_prob)
         self.document_topic_prob = normalize(self.document_topic_prob)
-      #  print('doc_topic_prob',self.document_topic_prob )
-        
+
+        print(self.document_topic_prob)
       #  pass    # REMOVE THIS
 
 
@@ -205,7 +204,7 @@ class Corpus(object):
                 wordsum = topicsum + self.term_doc_matrix[doc][word]
             docsum = docsum +wordsum
         self.likelihoods.append(docsum)
-      #  print(self.likelihoods)
+        print(self.likelihoods)
         return
 
     def plsa(self, number_of_topics, max_iter, epsilon):
@@ -234,8 +233,8 @@ class Corpus(object):
             self.expectation_step(number_of_topics)
             self.maximization_step(number_of_topics)
             self.calculate_likelihood(number_of_topics)
-            if (iteration >1 and (self.likelihoods[iteration] - self.likelihoods[iteration-1]) < epsilon ):
-                break
+           # if (iteration >1 and (self.likelihoods[iteration] - self.likelihoods[iteration-1]) < epsilon ):
+            #    break
        # print(self.likelihoods)
 
 
