@@ -185,7 +185,7 @@ class Corpus(object):
                     self.document_topic_prob[doc][topic] = self.document_topic_prob[doc][topic]  +   (self.term_doc_matrix[doc][word]*self.topic_prob[doc][topic][word])
         self.document_topic_prob = normalize(self.document_topic_prob)
 
-        print(self.document_topic_prob)
+     #   print(self.document_topic_prob)
       #  pass    # REMOVE THIS
 
 
@@ -235,8 +235,8 @@ class Corpus(object):
             self.expectation_step(number_of_topics)
             self.maximization_step(number_of_topics)
             self.calculate_likelihood(number_of_topics)
-          #  if (iteration >1 and (self.likelihoods[iteration] - self.likelihoods[iteration-1]) < epsilon ):
-           #     break
+            if (iteration >1 and (self.likelihoods[iteration] - self.likelihoods[iteration-1]) < epsilon ):
+                break
        # print(self.likelihoods)
 
 
