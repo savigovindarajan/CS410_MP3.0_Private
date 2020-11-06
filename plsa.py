@@ -8,6 +8,7 @@ def normalize(input_matrix):
     """
 
     row_sums = input_matrix.sum(axis=1)
+  #  print(row_sums)
     try:
         assert (np.count_nonzero(row_sums)==np.shape(row_sums)[0]) # no row should sum to zero
     except Exception:
@@ -63,13 +64,14 @@ class Corpus(object):
 
         Update self.vocabulary_size
         """
-        for i in range(0,len(self.documents)-1):
-            for j in range(i,len(self.documents[i])-1):
+        for i in range(0,len(self.documents)):
+            for j in range(i,len(self.documents[i])):
                 self.vocabulary.append(self.documents[i][j])
 
         self.vocabulary = set(self.vocabulary)
         self.vocabulary = sorted(self.vocabulary)
         self.vocabulary_size = len(self.vocabulary)
+
         #pass    # REMOVE THIS
 
     def build_term_doc_matrix(self):
@@ -88,7 +90,7 @@ class Corpus(object):
                      if (term == self.documents[i][j]):
                          doc_term = doc_term +1
                 self.term_doc_matrix[i][n] = doc_term
-
+       # print(self.term_doc_matrix)
     def initialize_randomly(self, number_of_topics):
         """
         Randomly initialize the matrices: document_topic_prob and topic_word_prob
@@ -97,12 +99,14 @@ class Corpus(object):
         Don't forget to normalize! 
         HINT: you will find numpy's random matrix useful [https://docs.scipy.org/doc/numpy-1.15.0/reference/generated/numpy.random.random.html]
         """
+
         self.document_topic_prob = np.random.random_sample((self.number_of_documents, number_of_topics))
+
         self.document_topic_prob = normalize(self.document_topic_prob)
-#        print(self.document_topic_prob)
+      #  print(self.document_topic_prob)
         self.topic_word_prob = np.random.random_sample((number_of_topics, len(self.vocabulary)))
         self.topic_word_prob = normalize(self.topic_word_prob)
-#        print(self.topic_word_prob)
+     #   print(self.topic_word_prob)
 
 
     #    pass    # REMOVE THIS
@@ -131,50 +135,55 @@ class Corpus(object):
         else:
             self.initialize_uniformly(number_of_topics)
 
-    def expectation_step(self):
+    def expectation_step(self,number_of_topics):
         """ The E-step updates P(z | w, d)
         # P(z | d, w)
         """
-     #   row_sums = np.zeros([1, 1, self.vocabulary_size], dtype=np.float)
+        new_matrix = np.zeros([self.number_of_documents, number_of_topics, self.vocabulary_size], dtype=np.float)
         print("E step:")
-        for topic in range(0, 2):
-
-            for doc in range(0,self.number_of_documents):
-                 row_sums = np.zeros([1, 1, self.vocabulary_size], dtype=np.float)
-                 for word in range(0,self.vocabulary_size):
+        for topic in range(0, number_of_topics):
+            for doc in range(0, self.number_of_documents):
+                for word in range(0, self.vocabulary_size):
                     self.topic_prob[doc][topic][word] = self.document_topic_prob[doc][topic] * self.topic_word_prob[topic][word]
-                 row_sums = row_sums + self.topic_prob[doc][topic][word]
-            self.topic_prob[topic] = self.topic_prob[topic]/row_sums
-      #  print(self.topic_prob)
-      #  pass    # REMOVE THIS
-            
+       # print('self.topic_prob')
+       # print(self.topic_prob)
+        new_matrix = self.topic_prob.sum(axis=0)
+       # print('new_matrix')
+       # print(new_matrix)
 
+        for topic in range(0, number_of_topics):
+            for doc in range(0, self.number_of_documents):
+                for word in range(0, self.vocabulary_size):
+                    self.topic_prob[doc][topic][word] = (self.document_topic_prob[doc][topic] * self.topic_word_prob[topic][word])
+        self.topic_prob= self.topic_prob/new_matrix
+
+      #  print('topic prob')
+      #  print(self.topic_prob)
+##################################################################################
     def maximization_step(self, number_of_topics):
         """ The M-step updates P(w | z)
         """
-        print("M step:")
-        
+   #     print("M step:")
+        self.topic_word_prob = np.zeros([number_of_topics,self.vocabulary_size], dtype=np.float)
         # update P(w | z)
-        for word in range(0, self.vocabulary_size):
-  #          print('word', word)
-            for topic in range(0,number_of_topics):
-                self.topic_word_prob[topic][word] = 0
+        for topic in range(0, number_of_topics):
+            for word in range(0, self.vocabulary_size):
                 for doc in range(0,self.number_of_documents):
-                    self.topic_word_prob[topic][word]  = self.topic_word_prob[topic][word]+ (self.term_doc_matrix[doc][word]*self.topic_prob[doc][topic][word])
-   #                 if (doc == 0): print('inside loop',self.topic_word_prob[topic][word])
-   #             print(self.topic_word_prob[topic][word])
-    #        print('check Mstep1 topic word',self.topic_word_prob[topic][word])
-    #    self.topic_word_prob = normalize(self.topic_word_prob)
-  #      print(self.topic_word_prob )
+                    self.topic_word_prob[topic][word]    = self.topic_word_prob[topic][word]+ (self.term_doc_matrix[doc][word]*self.topic_prob[doc][topic][word])
+        self.topic_word_prob = normalize(self.topic_word_prob)
+      #  print('topic_word_prob',self.topic_word_prob )
+
 
         # update P(z | d)
-
+      #  self.document_topic_prob = np.zeros([self.number_of_documents, number_of_topics], dtype=np.float)
         for doc in range(0,self.number_of_documents):
+             self.document_topic_prob[doc][topic] = 0
              for topic in range(0,number_of_topics):
                 for word in range(0, self.vocabulary_size):
-                    self.document_topic_prob[doc][topic] = self.document_topic_prob[doc][topic]+ (self.term_doc_matrix[doc][word]*self.topic_prob[doc][topic][word])
+                    self.document_topic_prob[doc][topic] = self.document_topic_prob[doc][topic]  +   (self.term_doc_matrix[doc][word]*self.topic_prob[doc][topic][word])
+      #  print('doc_topic_prob', self.document_topic_prob)
         self.document_topic_prob = normalize(self.document_topic_prob)
-#        print(self.document_topic_prob )
+      #  print('doc_topic_prob',self.document_topic_prob )
         
       #  pass    # REMOVE THIS
 
@@ -186,6 +195,7 @@ class Corpus(object):
         Append the calculated log-likelihood to self.likelihoods
 
         """
+        docsum = 0
         for doc in range(0,self.number_of_documents):
             wordsum = 0
             for word in range(0,self.vocabulary_size):
@@ -193,7 +203,8 @@ class Corpus(object):
                 for topic in range(0,number_of_topics):
                     topicsum = topicsum + math.log(self.document_topic_prob[doc][topic]*self.topic_word_prob[topic][word])
                 wordsum = topicsum + self.term_doc_matrix[doc][word]
-        self.likelihoods.append(wordsum)
+            docsum = docsum +wordsum
+        self.likelihoods.append(docsum)
       #  print(self.likelihoods)
         return
 
@@ -220,12 +231,12 @@ class Corpus(object):
 
         for iteration in range(max_iter):
             print("Iteration #" + str(iteration + 1) + "...")
-            self.expectation_step()
+            self.expectation_step(number_of_topics)
             self.maximization_step(number_of_topics)
             self.calculate_likelihood(number_of_topics)
             if (iteration >1 and (self.likelihoods[iteration] - self.likelihoods[iteration-1]) < epsilon ):
                 break
-        #print(self.likelihoods)
+       # print(self.likelihoods)
 
 
             #pass    # REMOVE THIS
@@ -237,11 +248,11 @@ def main():
     corpus = Corpus(documents_path)  # instantiate corpus
     corpus.build_corpus()
     corpus.build_vocabulary()
-    print(corpus.vocabulary)
+    #print(corpus.vocabulary)
     print("Vocabulary size:" + str(len(corpus.vocabulary)))
     print("Number of documents:" + str(len(corpus.documents)))
     number_of_topics = 2
-    max_iterations = 10
+    max_iterations = 50
     epsilon = 0.001
     corpus.plsa(number_of_topics, max_iterations, epsilon)
 
