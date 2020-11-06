@@ -164,7 +164,7 @@ class Corpus(object):
        # self.topic_prob= self.topic_prob/new_matrix
 
       #  print('topic prob')
-        print(self.topic_prob)
+     #   print(self.topic_prob)
 ##################################################################################
     def maximization_step(self, number_of_topics):
         """ The M-step updates P(w | z)
@@ -181,7 +181,7 @@ class Corpus(object):
                 self.topic_word_prob[topic][word] = new_matrix
       #  print(self.topic_word_prob)
         self.topic_word_prob = normalize(self.topic_word_prob)
-        print('topic_word_prob',self.topic_word_prob )
+     #   print('topic_word_prob',self.topic_word_prob )
 
 
         # update P(z | d)
@@ -242,9 +242,9 @@ class Corpus(object):
             self.expectation_step(number_of_topics)
             self.maximization_step(number_of_topics)
             self.calculate_likelihood(number_of_topics)
-            if (iteration >1 and (abs(self.likelihoods[iteration]) - abs(self.likelihoods[iteration-1]) < epsilon) ):
+            if (iteration >1 and (self.likelihoods[iteration] - self.likelihoods[iteration-1] < epsilon) ):
                 break
-       # print(self.likelihoods)
+        print(self.likelihoods)
 
 
             #pass    # REMOVE THIS
@@ -260,7 +260,7 @@ def main():
     print("Vocabulary size:" + str(len(corpus.vocabulary)))
     print("Number of documents:" + str(len(corpus.documents)))
     number_of_topics = 2
-    max_iterations = 10
+    max_iterations = 150
     epsilon = 0.001
     corpus.plsa(number_of_topics, max_iterations, epsilon)
 
