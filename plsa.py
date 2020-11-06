@@ -70,7 +70,7 @@ class Corpus(object):
         self.vocabulary = set(self.vocabulary)
         self.vocabulary = sorted(self.vocabulary)
         self.vocabulary_size = len(self.vocabulary)
-     #   print(self.vocabulary)
+        print(self.vocabulary)
         #pass    # REMOVE THIS
 
     def build_term_doc_matrix(self):
@@ -89,7 +89,7 @@ class Corpus(object):
                      if (term == self.documents[i][j]):
                          doc_term = doc_term +1
                 self.term_doc_matrix[i][n] = doc_term
-      #  print(self.term_doc_matrix)
+        print(self.term_doc_matrix)
     def initialize_randomly(self, number_of_topics):
         """
         Randomly initialize the matrices: document_topic_prob and topic_word_prob
